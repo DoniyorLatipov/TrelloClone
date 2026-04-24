@@ -4,6 +4,7 @@ import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { ArrowRight, KanbanSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 function NavbarLayout({ children }: React.PropsWithChildren) {
   return (
@@ -21,6 +22,18 @@ function NavbarLayout({ children }: React.PropsWithChildren) {
 
 function Navbar() {
   const { isSignedIn, user } = useUser();
+  const pathname = usePathname();
+
+  const isDashboardPage = pathname === '/dashboard';
+  const isBoardPage = pathname.startsWith('/boards/');
+
+  if (isDashboardPage) {
+    return (
+      <NavbarLayout>
+        <UserButton />
+      </NavbarLayout>
+    );
+  }
 
   return (
     <NavbarLayout>
