@@ -59,7 +59,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-cente justify-between">
                     <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 ${board.color} rounded`} />
+                      <div className={`w-4 h-4 bg-${board.color} rounded`} />
                       <CardTitle className="text-base sm:text-lg group-hover:text-blue-600 transition-color">
                         {board.title}
                       </CardTitle>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2 flex-wrap sm:flex-nowrap">
                     <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 ${board.color} rounded`} />
+                      <div className={`w-4 h-4 bg-${board.color} rounded`} />
                       <CardTitle className="text-base sm:text-lg group-hover:text-blue-600 transition-color whitespace-nowrap">
                         {board.title}
                       </CardTitle>

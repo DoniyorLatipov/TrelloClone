@@ -75,7 +75,7 @@ export const boardDataService = {
     const board = await boardService.createBoard(supabase, {
       title: boardData.title,
       description: boardData.desciption || null,
-      color: boardData.color || 'bg-blue-500',
+      color: boardData.color || 'blue-500',
       user_id: boardData.userId,
     });
 
