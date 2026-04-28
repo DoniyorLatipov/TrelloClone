@@ -54,6 +54,5 @@ export function useBoards() {
     loading,
     error,
     createBoard,
-    loadBoards,
   };
 }
