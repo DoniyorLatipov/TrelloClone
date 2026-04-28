@@ -1,10 +1,11 @@
 'use client';
 
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
-import { ArrowRight, KanbanSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Edit, KanbanSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Separator } from './ui/separator';
 
 function BasicNavbarLayout({ children }: React.PropsWithChildren) {
   return (
@@ -20,7 +21,14 @@ function BasicNavbarLayout({ children }: React.PropsWithChildren) {
   );
 }
 
-function Navbar() {
+// for boards page
+interface NavbarProps {
+  boardTitle?: string;
+  boardColor?: string;
+  onEditBoard?: () => void;
+}
+
+function Navbar({ boardTitle, boardColor, onEditBoard }: NavbarProps) {
   const { isSignedIn, user } = useUser();
   const pathname = usePathname();
 
@@ -32,6 +40,40 @@ function Navbar() {
       <BasicNavbarLayout>
         <UserButton />
       </BasicNavbarLayout>
+    );
+  }
+
+  if (isBoardPage) {
+    return (
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
+          <div className="flex items-center  justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+              <Link
+                href="/dashboard"
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-900 flex-shrink 0"
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                <p className="hidden sm:inline">Back to Dashboard</p>
+                <p className="sm:hidden">Back</p>
+              </Link>
+              <Separator orientation="vertical" />
+              <div
+                className="flex items-center space-x-1 sm:space-x-2 min-w-0 cursor-pointer"
+                onClick={onEditBoard}
+              >
+                <KanbanSquare className={`text-${boardColor}`} />
+                <h2 className="text-lg font-bold text-gray-900 truncate">{boardTitle}</h2>
+                {onEditBoard && (
+                  <Button variant="ghost" size="sm" className="h-7 w-7 flex-shrink-0 p-0">
+                    <Edit className="text-blue-500 " />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
     );
   }
 
