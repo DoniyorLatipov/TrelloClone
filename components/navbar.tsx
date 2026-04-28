@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-function NavbarLayout({ children }: React.PropsWithChildren) {
+function BasicNavbarLayout({ children }: React.PropsWithChildren) {
   return (
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
@@ -29,14 +29,14 @@ function Navbar() {
 
   if (isDashboardPage) {
     return (
-      <NavbarLayout>
+      <BasicNavbarLayout>
         <UserButton />
-      </NavbarLayout>
+      </BasicNavbarLayout>
     );
   }
 
   return (
-    <NavbarLayout>
+    <BasicNavbarLayout>
       {isSignedIn ? (
         <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
           <span className="text-xs hidden sm:block text-gray-600">
@@ -62,7 +62,7 @@ function Navbar() {
           </SignUpButton>
         </>
       )}
-    </NavbarLayout>
+    </BasicNavbarLayout>
   );
 }
 
