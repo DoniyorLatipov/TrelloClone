@@ -5,16 +5,37 @@ import Navbar from '@/components/navbar';
 // import { Input } from '@/components/ui/input';
 // import { Label } from '@/components/ui/label';
 import { useBoard } from '@/lib/hooks/useBoards';
+import { Loader2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 // import { useState } from 'react';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board } = useBoard(id);
+  const { board, loading, error } = useBoard(id);
+
+  console.log(board);
 
   // const [isEditing, setIsEditing] = useState(false);
   // const [newTitle, setNewTitle] = useState('');
   // const [newColor, setNewColor] = useState('');
+
+  if (loading) {
+    return (
+      <div>
+        <Loader2 />
+        <span>Loading your boards...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2>Error loading board...</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
