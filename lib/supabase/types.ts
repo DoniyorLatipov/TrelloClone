@@ -2,12 +2,14 @@
 // All data types for Supabase tables
 // ----------
 
+import { BaseColorType } from '@/config/color';
+
 export interface BoardType {
   id: string;
   title: string;
   description: string | null;
   created_at: string;
-  color: string;
+  color: BaseColorType;
   user_id: string;
   updated_at: string;
 }
