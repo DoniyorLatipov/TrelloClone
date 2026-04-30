@@ -1,13 +1,18 @@
 'use client';
 
+// ----------
+// We use custom navigation bars for each page to ensure a unique display based on the current context (e.g., for the board page)
+// ----------
+
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
-import { ArrowLeft, ArrowRight, Edit, KanbanSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Edit, Filter, KanbanSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Separator } from './ui/separator';
 import { getColorClass } from '@/lib/getColorCLass';
 import { BaseColorType } from '@/config/color';
+import { Badge } from './ui/badge';
 
 function BasicNavbarLayout({ children }: React.PropsWithChildren) {
   return (
@@ -64,7 +69,7 @@ function Navbar({ boardTitle, boardColor, onEditBoard }: NavbarProps) {
                 className="flex items-center space-x-1 sm:space-x-2 min-w-0 cursor-pointer"
                 onClick={onEditBoard}
               >
-                <KanbanSquare className={getColorClass(boardColor!, 'text')} />
+                <KanbanSquare className={`flex-none ${getColorClass(boardColor!, 'text')}`} />
                 <h2 className="text-lg font-bold text-gray-900 truncate">{boardTitle}</h2>
                 {onEditBoard && (
                   <Button variant="ghost" size="sm" className="h-7 w-7 flex-shrink-0 p-0">
