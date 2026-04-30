@@ -76,7 +76,7 @@ export function useBoard(boardId: string) {
   }, [boardId, supabase]);
 
   async function loadBoard() {
-    if (!boardId) throw new Error('User not authenticated');
+    if (!boardId) throw new Error(`Can't acces board with ID: ${boardId}.`);
 
     try {
       setLoading(true);
@@ -86,11 +86,30 @@ export function useBoard(boardId: string) {
       setBoard(data.board);
       setColumns(data.columns);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load boards.');
+      setError(err instanceof Error ? err.message : `Failed to load the board with ID: ${boardId}`);
     } finally {
       setLoading(false);
     }
   }
 
-  return { board, columns, loading, error };
+  async function updateBoard(boardId: string, updates: { color: BaseColorType; title: string }) {
+    if (!boardId) throw new Error(`Can't acces board with ID: ${boardId}.`);
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const updatedBoard = await boardService.updateBoard(supabase!, boardId, updates);
+      setBoard(updatedBoard);
+      return updatedBoard;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : `Failed to update the board with ID: ${boardId}`,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { board, columns, loading, error, updateBoard };
 }
