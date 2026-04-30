@@ -33,22 +33,16 @@ interface NavbarProps {
   boardTitle?: string;
   boardColor?: BaseColorType;
   onEditBoard?: () => void;
+  onEditFilter?: () => void;
+  filterCount?: number;
 }
 
-function Navbar({ boardTitle, boardColor, onEditBoard }: NavbarProps) {
+function Navbar({ boardTitle, boardColor, onEditBoard, onEditFilter, filterCount }: NavbarProps) {
   const { isSignedIn, user } = useUser();
   const pathname = usePathname();
 
   const isDashboardPage = pathname === '/dashboard';
   const isBoardPage = pathname.startsWith('/boards/');
-
-  if (isDashboardPage) {
-    return (
-      <BasicNavbarLayout>
-        <UserButton />
-      </BasicNavbarLayout>
-    );
-  }
 
   if (isBoardPage) {
     return (
@@ -78,9 +72,38 @@ function Navbar({ boardTitle, boardColor, onEditBoard }: NavbarProps) {
                 )}
               </div>
             </div>
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              {onEditFilter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onEditFilter}
+                  className={`relative ${filterCount! > 0 ? 'bg-blue-100 border-blue-200' : ''}`}
+                >
+                  <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-0 sm:mr-2" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Filter</span>
+                  {filterCount! > 0 && (
+                    <Badge
+                      variant="default"
+                      className="text-xs ml-1 sm:ml-2 absolute -top-2 -right-2 px-1"
+                    >
+                      {filterCount}
+                    </Badge>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
+    );
+  }
+
+  if (isDashboardPage) {
+    return (
+      <BasicNavbarLayout>
+        <UserButton />
+      </BasicNavbarLayout>
     );
   }
 
