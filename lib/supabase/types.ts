@@ -3,6 +3,7 @@
 // ----------
 
 import { BaseColorType } from '@/config/color';
+import { BasePrioritiesType } from '@/config/priorities';
 
 export interface BoardType {
   id: string;
@@ -30,7 +31,7 @@ export interface TasksType {
   description: string | null;
   assignee: string | null;
   due_date: string | null;
-  priority: 'low' | 'medium' | 'high';
+  priority: BasePrioritiesType;
   sort_order: number;
   created_at: string;
   updated_at: string;
