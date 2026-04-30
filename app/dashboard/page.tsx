@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { getColorClass } from '@/lib/getColorCLass';
 import { useBoards } from '@/lib/hooks/useBoards';
 import { useUser } from '@clerk/nextjs';
 import {
@@ -59,7 +60,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-cente justify-between">
                     <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 bg-${board.color} rounded`} />
+                      <div className={`w-4 h-4 ${getColorClass(board.color, 'bg')} rounded`} />
                       <CardTitle className="text-base sm:text-lg group-hover:text-blue-600 transition-color">
                         {board.title}
                       </CardTitle>

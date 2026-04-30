@@ -6,6 +6,8 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Separator } from './ui/separator';
+import { getColorClass } from '@/lib/getColorCLass';
+import { BaseColorType } from '@/config/color';
 
 function BasicNavbarLayout({ children }: React.PropsWithChildren) {
   return (
@@ -24,7 +26,7 @@ function BasicNavbarLayout({ children }: React.PropsWithChildren) {
 // for boards page
 interface NavbarProps {
   boardTitle?: string;
-  boardColor?: string;
+  boardColor?: BaseColorType;
   onEditBoard?: () => void;
 }
 
@@ -62,7 +64,7 @@ function Navbar({ boardTitle, boardColor, onEditBoard }: NavbarProps) {
                 className="flex items-center space-x-1 sm:space-x-2 min-w-0 cursor-pointer"
                 onClick={onEditBoard}
               >
-                <KanbanSquare className={`text-${boardColor}`} />
+                <KanbanSquare className={getColorClass(boardColor!, 'text')} />
                 <h2 className="text-lg font-bold text-gray-900 truncate">{boardTitle}</h2>
                 {onEditBoard && (
                   <Button variant="ghost" size="sm" className="h-7 w-7 flex-shrink-0 p-0">

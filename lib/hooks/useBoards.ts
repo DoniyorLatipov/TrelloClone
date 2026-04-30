@@ -4,6 +4,7 @@ import { boardDataService, boardService } from '../services';
 import { BoardType, ColumnType } from '../supabase/types';
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../supabase/supabaseProvider';
+import { BaseColorType } from '@/config/color';
 
 export function useBoards() {
   const { user } = useUser();
@@ -35,7 +36,11 @@ export function useBoards() {
     }
   }
 
-  async function createBoard(boardData: { title: string; desciption?: string; color?: string }) {
+  async function createBoard(boardData: {
+    title: string;
+    desciption?: string;
+    color?: BaseColorType;
+  }) {
     if (!user) throw new Error('User not authenticated');
 
     try {

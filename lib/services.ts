@@ -1,3 +1,4 @@
+import { BaseColorType } from '@/config/color';
 import { BoardType, ColumnType } from './supabase/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -68,14 +69,14 @@ export const boardDataService = {
     boardData: {
       title: string;
       desciption?: string;
-      color?: string;
+      color?: BaseColorType;
       userId: string;
     },
   ) {
     const board = await boardService.createBoard(supabase, {
       title: boardData.title,
       description: boardData.desciption || null,
-      color: boardData.color || 'blue-500',
+      color: boardData.color || 'blue',
       user_id: boardData.userId,
     });
 
