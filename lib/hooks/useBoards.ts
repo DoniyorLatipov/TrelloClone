@@ -1,10 +1,11 @@
 'use client';
 import { useUser } from '@clerk/nextjs';
-import { boardDataService, boardService } from '../services';
+import { boardDataService, boardService, taskService } from '../services';
 import { BoardType, ColumnType, TaskType } from '../supabase/types';
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../supabase/supabaseProvider';
 import { BaseColorType } from '@/config/color';
+import { CreateTaskInputType } from '../types';
 
 export function useBoards() {
   const { user } = useUser();
@@ -113,5 +114,30 @@ export function useBoard(boardId: string) {
     }
   }
 
-  return { board, columns, loading, error, updateBoard };
+  async function createTask(columnId: string, taskData: CreateTaskInputType) {
+    if (!columnId) throw new Error(`Can't acces column with ID: ${columnId}.`);
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const newTask = await taskService.createTask(supabase!, {
+        title: taskData.title,
+        description: taskData.description || null,
+        assignee: taskData.assignee || null,
+        due_date: taskData.dueDate || '',
+        column_id: columnId,
+        sort_order: tasks.filter((task) => task.column_id === columnId).length || 0,
+        priority: taskData.priority,
+      });
+      setTasks((prev) => [newTask, ...prev]);
+      return newTask;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `Failed to create the task`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { board, tasks, columns, loading, error, updateBoard, createTask };
 }
