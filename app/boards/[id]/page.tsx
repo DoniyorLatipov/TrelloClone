@@ -1,5 +1,6 @@
 'use client';
 
+import Column from '@/components/column';
 import Navbar from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
@@ -9,23 +10,30 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { BASE_COLORS, BaseColorType } from '@/config/color';
 import { BASE_PRIORITIES } from '@/config/priorities';
 import { getColorClass } from '@/lib/getColorCLass';
 import { useBoard } from '@/lib/hooks/useBoards';
-import { capitalize } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
+import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, loading, error, updateBoard } = useBoard(id);
-
-  console.log(board);
+  const { board, loading, error, updateBoard, createTask, columns, tasks } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -42,6 +50,21 @@ export default function BoardPage() {
       await updateBoard(board.id, { title: newTitle, color: newColor });
     } catch (err) {
       throw err;
+    }
+  }
+
+  async function handleCreateTask(e: React.SubmitEvent) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const taskData = mapFormDataToCreateTaskInputType(formData);
+
+    if (taskData.title.trim()) {
+      const targetColumn = columns[0];
+
+      if (!targetColumn) throw new Error('No column available to add task in');
+
+      await createTask(targetColumn.id, taskData);
     }
   }
 
@@ -81,6 +104,111 @@ export default function BoardPage() {
         filterCount={2}
       />
 
+      {/* Board content */}
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm: py-6">
+        {/* Stats bar and create task button dialog */}
+        <div className="flex flex-col sm:flex-row sm:flex-row sm:item-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">Total Tasks:</span> {tasks.length}
+            </div>
+          </div>
+
+          {/* Add task dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="w-full sm:w-auto">
+                <Plus />
+                Add Task
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="w-[95vw] max-w-[425px] mx-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Task</DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">
+                  Add a task to the board
+                </DialogDescription>
+              </DialogHeader>
+
+              <form className="space-y-4" onSubmit={handleCreateTask}>
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    type="text"
+                    name="title"
+                    id="title"
+                    required
+                    placeholder="Enter task title..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    name="description"
+                    id="description"
+                    placeholder="Enter task description... (optional)"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="assignee">Assignee</Label>
+                  <Input
+                    type="text"
+                    name="assignee"
+                    id="assignee"
+                    placeholder="Who should do this task? (optional)"
+                  />
+                  <Button variant="secondary" type="button" className="text-xs">
+                    Assign yourself
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  {/* Select defaultValue="medium" */}
+                  <Select name="priority" defaultValue={BASE_PRIORITIES[1]}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BASE_PRIORITIES.map((priority) => (
+                        <SelectItem key={priority} value={priority}>
+                          {capitalize(priority)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dueDate">Due Date</Label>
+                  <Input type="date" id="dueDate" name="dueDate" />
+                </div>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                  <Button type="submit">Create Task</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Board Columns */}
+        <div>
+          {columns.map((column) => (
+            <Column
+              key={column.id}
+              column={column}
+              onCreateTask={() => new Promise(() => {})}
+              onEditColumn={() => new Promise(() => {})}
+              tasks={tasks.filter((task) => task.column_id === column.id)}
+            />
+          ))}
+        </div>
+      </main>
+
+      {/* Dialog for editing title and color */}
       <Dialog open={isEditingTitle} onOpenChange={setIsEditingTitle}>
         <DialogContent className="w-[95vw] max-w-[425px] mx-auto">
           <DialogHeader>
@@ -127,6 +255,7 @@ export default function BoardPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Dialog for filtering tasks */}
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <DialogContent className="w-[95vw] max-w-[425px] mx-auto">
           <DialogHeader>
