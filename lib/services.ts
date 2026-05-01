@@ -1,5 +1,5 @@
 import { BaseColorType } from '@/config/color';
-import { BoardType, ColumnType } from './supabase/types';
+import { BoardType, ColumnType, TaskType } from './supabase/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 // ----------
@@ -82,6 +82,40 @@ export const columnService = {
   },
 };
 
+export const taskService = {
+  async getTasksByBoardId(supabase: SupabaseClient, boardId: string): Promise<TaskType[]> {
+    // ----------
+    // Get all tasks with their related column’s boardId, include only tasks that have a valid column (inner join), filter by the given boardId, and order the results by sort_order ascending.
+    // ----------
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select(
+        `
+        *,
+        columns!inner(board_id)
+        `,
+      )
+      .eq('columns.board_id', boardId)
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+
+    return data || [];
+  },
+
+  async createTask(
+    supabase: SupabaseClient,
+    task: Omit<TaskType, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<TaskType> {
+    const { data, error } = await supabase.from('tasks').insert(task).select().single();
+
+    if (error) throw error;
+
+    return data;
+  },
+};
+
 export const boardDataService = {
   async createBoardWithDefaultColumns(
     supabase: SupabaseClient,
@@ -133,13 +167,14 @@ export const boardDataService = {
 
   // Precisely because the function will be accessing the table both of boards and their tasks, it is better to place this func in the boardData Service
   async getBoardWithColumns(supabase: SupabaseClient, boardId: string) {
-    const [board, columns] = await Promise.all([
+    const [board, columns, tasks] = await Promise.all([
       boardService.getBoard(supabase, boardId),
       columnService.getColumns(supabase, boardId),
+      taskService.getTasksByBoardId(supabase, boardId),
     ]);
 
     if (!board) throw new Error('Board not found');
 
-    return { board, columns };
+    return { board, columns, tasks };
   },
 };

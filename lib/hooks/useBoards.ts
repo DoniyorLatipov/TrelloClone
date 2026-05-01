@@ -1,7 +1,7 @@
 'use client';
 import { useUser } from '@clerk/nextjs';
 import { boardDataService, boardService } from '../services';
-import { BoardType, ColumnType } from '../supabase/types';
+import { BoardType, ColumnType, TaskType } from '../supabase/types';
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../supabase/supabaseProvider';
 import { BaseColorType } from '@/config/color';
@@ -66,6 +66,7 @@ export function useBoard(boardId: string) {
   const { supabase } = useSupabase();
   const [board, setBoard] = useState<BoardType | null>(null);
   const [columns, setColumns] = useState<ColumnType[]>([]);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>();
 
@@ -85,6 +86,7 @@ export function useBoard(boardId: string) {
       const data = await boardDataService.getBoardWithColumns(supabase!, boardId);
       setBoard(data.board);
       setColumns(data.columns);
+      setTasks(data.tasks);
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to load the board with ID: ${boardId}`);
     } finally {
