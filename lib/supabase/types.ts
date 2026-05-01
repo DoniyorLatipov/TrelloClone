@@ -24,7 +24,7 @@ export interface ColumnType {
   user_id: string;
 }
 
-export interface TasksType {
+export interface TaskType {
   id: string;
   column_id: string;
   title: string;
