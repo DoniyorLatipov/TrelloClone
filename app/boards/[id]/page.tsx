@@ -195,7 +195,7 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <div>
+        <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
           {columns.map((column) => (
             <Column
               key={column.id}
