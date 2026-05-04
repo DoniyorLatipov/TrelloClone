@@ -38,6 +38,14 @@ export default function Column({ column, onCreateTask, onEditColumn, tasks }: Co
           {tasks.map((task) => (
             <Task task={task} key={task.id} />
           ))}
+          <Button
+            variant="ghost"
+            className="w-full p-2 text-gray-500 hover:text-gray-700"
+            onClick={() => onCreatingTask(true)}
+          >
+            <Plus />
+            Add Task
+          </Button>
         </div>
       </div>
     </div>
