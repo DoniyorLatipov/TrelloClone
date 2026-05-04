@@ -125,7 +125,7 @@ export function useBoard(boardId: string) {
         title: taskData.title,
         description: taskData.description || null,
         assignee: taskData.assignee || null,
-        due_date: taskData.dueDate || '',
+        due_date: taskData.dueDate ? new Date(taskData.dueDate).toISOString() : null,
         column_id: columnId,
         sort_order: tasks.filter((task) => task.column_id === columnId).length || 0,
         priority: taskData.priority,
