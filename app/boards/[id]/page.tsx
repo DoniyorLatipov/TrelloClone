@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,6 +40,8 @@ export default function BoardPage() {
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+
   async function handleUpdateBoard(e: React.SubmitEvent) {
     e.preventDefault();
 
@@ -65,6 +66,7 @@ export default function BoardPage() {
       if (!targetColumn) throw new Error('No column available to add task in');
 
       await createTask(targetColumn.id, taskData);
+      setIsCreatingTask(false);
     }
   }
 
@@ -115,83 +117,10 @@ export default function BoardPage() {
           </div>
 
           {/* Add task dialog */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus />
-                Add Task
-              </Button>
-            </DialogTrigger>
-
-            <DialogContent className="w-[95vw] max-w-[425px] mx-auto">
-              <DialogHeader>
-                <DialogTitle>Create New Task</DialogTitle>
-                <DialogDescription className="text-sm text-gray-600">
-                  Add a task to the board
-                </DialogDescription>
-              </DialogHeader>
-
-              <form className="space-y-4" onSubmit={handleCreateTask}>
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title *</Label>
-                  <Input
-                    type="text"
-                    name="title"
-                    id="title"
-                    required
-                    placeholder="Enter task title..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    name="description"
-                    id="description"
-                    placeholder="Enter task description... (optional)"
-                    rows={3}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="assignee">Assignee</Label>
-                  <Input
-                    type="text"
-                    name="assignee"
-                    id="assignee"
-                    placeholder="Who should do this task? (optional)"
-                  />
-                  <Button variant="secondary" type="button" className="text-xs">
-                    Assign yourself
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
-                  {/* Select defaultValue="medium" */}
-                  <Select name="priority" defaultValue={BASE_PRIORITIES[1]}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BASE_PRIORITIES.map((priority) => (
-                        <SelectItem key={priority} value={priority}>
-                          {capitalize(priority)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input type="date" id="dueDate" name="dueDate" />
-                </div>
-                <div className="flex justify-end space-x-2 pt-4">
-                  <Button type="button" variant="outline">
-                    Cancel
-                  </Button>
-                  <Button type="submit">Create Task</Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button className="w-full sm:w-auto" onClick={() => setIsCreatingTask(true)}>
+            <Plus />
+            Add Task
+          </Button>
         </div>
 
         {/* Board Columns */}
@@ -200,13 +129,85 @@ export default function BoardPage() {
             <Column
               key={column.id}
               column={column}
-              onCreateTask={() => new Promise(() => {})}
+              onCreatingTask={() => setIsCreatingTask(true)}
               onEditColumn={() => new Promise(() => {})}
               tasks={tasks.filter((task) => task.column_id === column.id)}
             />
           ))}
         </div>
       </main>
+
+      {/* Dialog for creating new task */}
+      <Dialog open={isCreatingTask} onOpenChange={setIsCreatingTask}>
+        <DialogContent className="w-[95vw] max-w-[425px] mx-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Task</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              Add a task to the board
+            </DialogDescription>
+          </DialogHeader>
+
+          <form className="space-y-4" onSubmit={handleCreateTask}>
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                type="text"
+                name="title"
+                id="title"
+                required
+                placeholder="Enter task title..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                name="description"
+                id="description"
+                placeholder="Enter task description... (optional)"
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="assignee">Assignee</Label>
+              <Input
+                type="text"
+                name="assignee"
+                id="assignee"
+                placeholder="Who should do this task? (optional)"
+              />
+              <Button variant="secondary" type="button" className="text-xs">
+                Assign yourself
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="priority">Priority</Label>
+              {/* Select defaultValue="medium" */}
+              <Select name="priority" defaultValue={BASE_PRIORITIES[1]}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BASE_PRIORITIES.map((priority) => (
+                    <SelectItem key={priority} value={priority}>
+                      {capitalize(priority)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">Due Date</Label>
+              <Input type="date" id="dueDate" name="dueDate" />
+            </div>
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsCreatingTask(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Create Task</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog for editing title and color */}
       <Dialog open={isEditingTitle} onOpenChange={setIsEditingTitle}>
