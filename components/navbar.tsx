@@ -10,7 +10,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Separator } from './ui/separator';
-import { getColorClass } from '@/lib/getColorCLass';
+import { getColorClass } from '@/lib/getColorClass';
 import { BaseColorType } from '@/config/color';
 import { Badge } from './ui/badge';
 

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { getColorClass } from '@/lib/getColorCLass';
+import { getColorClass } from '@/lib/getColorClass';
 import { useBoards } from '@/lib/hooks/useBoards';
 import { useUser } from '@clerk/nextjs';
 import {
