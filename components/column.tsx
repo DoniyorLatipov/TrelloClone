@@ -3,6 +3,7 @@ import React from 'react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Edit } from 'lucide-react';
+import Task from './task';
 
 interface ColumnProps extends React.PropsWithChildren {
   column: ColumnType;
@@ -32,8 +33,12 @@ export default function Column({ column, onCreateTask, onEditColumn, tasks }: Co
           </div>
         </div>
 
-        {/* Column Content (not ready yet) */}
-        <div>{tasks.map((tasks) => tasks.title)}</div>
+        {/* Column Content */}
+        <div className="space-y-3 p-2">
+          {tasks.map((task) => (
+            <Task task={task} key={task.id} />
+          ))}
+        </div>
       </div>
     </div>
   );
