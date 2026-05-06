@@ -4,6 +4,8 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Edit } from 'lucide-react';
 import Task from './task';
+import { CollisionPriority } from '@dnd-kit/abstract';
+import { useDroppable } from '@dnd-kit/react';
 
 interface ColumnProps extends React.PropsWithChildren {
   column: ColumnType;
@@ -13,9 +15,23 @@ interface ColumnProps extends React.PropsWithChildren {
 }
 
 export default function Column({ column, onCreateTask, onEditColumn, tasks }: ColumnProps) {
+  const { isDropTarget, ref } = useDroppable({
+    id: column.id,
+    type: 'column',
+    accept: ['task', 'column'],
+    collisionPriority: CollisionPriority.Low,
+    data: {
+      id: column.id,
+      type: 'column',
+    },
+  });
+
   return (
-    <div className="w-full lg:flex-shrink-0 lg:w-80">
-      <div className="bg-white rounded-lg shadow-sm border">
+    <div className="w-full lg:flex-shrink-0 lg:w-80" ref={ref}>
+      <div
+        //  ${isDragging ? 'opacity-70' : ''}
+        className={`rounded-lg shadow-sm border bg-white ${isDropTarget ? 'border border-blue-300' : ''}`}
+      >
         {/* Column Header */}
         <div className="p-3 sm:p-4 border-b">
           <div className="flex items-center justify-between">
@@ -36,7 +52,7 @@ export default function Column({ column, onCreateTask, onEditColumn, tasks }: Co
         {/* Column Content */}
         <div className="space-y-3 p-2">
           {tasks.map((task) => (
-            <Task task={task} key={task.id} />
+            <Task group={column.id} task={task} key={task.id} />
           ))}
           <Button
             variant="ghost"
