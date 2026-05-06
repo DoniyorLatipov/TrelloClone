@@ -29,6 +29,7 @@ import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
+import { DragDropProvider } from '@dnd-kit/react';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +42,11 @@ export default function BoardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+
+  interface dndElementType {
+    id: string;
+    type: 'column' | 'task';
+  }
 
   async function handleUpdateBoard(e: React.SubmitEvent) {
     e.preventDefault();
@@ -124,17 +130,19 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              onCreatingTask={() => setIsCreatingTask(true)}
-              onEditColumn={() => new Promise(() => {})}
-              tasks={tasks.filter((task) => task.column_id === column.id)}
-            />
-          ))}
-        </div>
+        <DragDropProvider>
+          <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
+            {columns.map((column) => (
+              <Column
+                key={column.id}
+                column={column}
+                onCreatingTask={() => setIsCreatingTask(true)}
+                onEditColumn={() => new Promise(() => {})}
+                tasks={tasks.filter((task) => task.column_id === column.id)}
+              />
+            ))}
+          </div>
+        </DragDropProvider>
       </main>
 
       {/* Dialog for creating new task */}
