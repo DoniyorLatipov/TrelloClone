@@ -2,17 +2,17 @@ import { ColumnType, TaskType } from '@/lib/supabase/types';
 import React from 'react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Edit } from 'lucide-react';
+import { Edit, Plus } from 'lucide-react';
 import Task from './task';
 
 interface ColumnProps extends React.PropsWithChildren {
   column: ColumnType;
-  onCreateTask: (taskData: any) => Promise<void>;
+  onCreatingTask: (open: boolean) => void;
   onEditColumn: (columnData: any) => Promise<void>;
   tasks: TaskType[];
 }
 
-export default function Column({ column, onCreateTask, onEditColumn, tasks }: ColumnProps) {
+export default function Column({ column, onCreatingTask, onEditColumn, tasks }: ColumnProps) {
   return (
     <div className="w-full lg:flex-shrink-0 lg:w-80">
       <div className="bg-white rounded-lg shadow-sm border">
