@@ -2,19 +2,19 @@ import { ColumnType, TaskType } from '@/lib/supabase/types';
 import React from 'react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Edit } from 'lucide-react';
+import { Edit, Plus } from 'lucide-react';
 import Task from './task';
 import { CollisionPriority } from '@dnd-kit/abstract';
 import { useDroppable } from '@dnd-kit/react';
 
 interface ColumnProps extends React.PropsWithChildren {
   column: ColumnType;
-  onCreateTask: (taskData: any) => Promise<void>;
+  onCreatingTask: (open: boolean) => void;
   onEditColumn: (columnData: any) => Promise<void>;
   tasks: TaskType[];
 }
 
-export default function Column({ column, onCreateTask, onEditColumn, tasks }: ColumnProps) {
+export default function Column({ column, onCreatingTask, onEditColumn, tasks }: ColumnProps) {
   const { isDropTarget, ref } = useDroppable({
     id: column.id,
     type: 'column',
