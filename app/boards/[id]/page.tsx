@@ -45,6 +45,7 @@ export default function BoardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [newTaskColumnId, setNewTaskColumnId] = useState<string | null>(null);
 
   // Dnd handlers
   const [activeTask, setActiveTask] = useState<TaskType | null>(null);
@@ -107,11 +108,11 @@ export default function BoardPage() {
     const taskData = mapFormDataToCreateTaskInputType(formData);
 
     if (taskData.title.trim()) {
-      const targetColumn = columns[0];
+      const targetColumnId = newTaskColumnId || columns[0].id;
 
-      if (!targetColumn) throw new Error('No column available to add task in');
+      if (!targetColumnId) throw new Error('No column available to add task in');
 
-      await createTask(targetColumn.id, taskData);
+      await createTask(targetColumnId, taskData);
       setIsCreatingTask(false);
     }
   }
@@ -163,7 +164,13 @@ export default function BoardPage() {
           </div>
 
           {/* Add task dialog */}
-          <Button className="w-full sm:w-auto" onClick={() => setIsCreatingTask(true)}>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setNewTaskColumnId(null);
+              setIsCreatingTask(true);
+            }}
+          >
             <Plus />
             Add Task
           </Button>
@@ -188,7 +195,10 @@ export default function BoardPage() {
               <Column
                 key={column.id}
                 column={column}
-                onCreatingTask={() => setIsCreatingTask(true)}
+                onCreatingTask={() => {
+                  setNewTaskColumnId(column.id);
+                  setIsCreatingTask(true);
+                }}
                 onEditColumn={() => new Promise(() => {})}
                 tasks={tasks.filter((task) => task.column_id === column.id)}
               />
