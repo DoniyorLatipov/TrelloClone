@@ -139,5 +139,5 @@ export function useBoard(boardId: string) {
     }
   }
 
-  return { board, tasks, columns, loading, error, updateBoard, createTask };
+  return { board, tasks, columns, loading, error, updateBoard, createTask, setTasks };
 }
