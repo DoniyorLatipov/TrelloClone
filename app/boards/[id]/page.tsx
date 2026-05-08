@@ -29,7 +29,9 @@ import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
-import { DragDropProvider, DragStartEvent } from '@dnd-kit/react';
+import { DragDropProvider, DragOverlay, DragStartEvent } from '@dnd-kit/react';
+import { TaskType } from '@/lib/supabase/types';
+import { TaskOverlay } from '@/components/task';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -150,6 +152,7 @@ export default function BoardPage() {
               />
             ))}
           </div>
+          <DragOverlay>{activeTask ? <TaskOverlay task={activeTask} /> : null}</DragOverlay>
         </DragDropProvider>
       </main>
 
