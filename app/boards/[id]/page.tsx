@@ -25,17 +25,17 @@ import { BASE_COLORS, BaseColorType } from '@/config/color';
 import { BASE_PRIORITIES } from '@/config/priorities';
 import { getColorClass } from '@/lib/getColorClass';
 import { useBoard } from '@/lib/hooks/useBoards';
-import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
+import { capitalize, mapFormDataToCreateTaskInputType, moveBySortOrder } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
-import { DragDropProvider, DragOverlay, DragStartEvent } from '@dnd-kit/react';
+import { DragDropProvider, DragOverEvent, DragOverlay, DragStartEvent } from '@dnd-kit/react';
 import { TaskType } from '@/lib/supabase/types';
 import { TaskOverlay } from '@/components/task';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, loading, error, updateBoard, createTask, columns, tasks } = useBoard(id);
+  const { board, loading, error, updateBoard, createTask, columns, tasks, setTasks } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -55,7 +55,36 @@ export default function BoardPage() {
     if (draggedTask) {
       setActiveTask(draggedTask);
     }
-    console.log(activeTask);
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const overId = event.operation.target?.id as string;
+    const overType = event.operation.target?.type as string;
+
+    if (overType !== 'task') return;
+
+    const overTask = tasks.find((task) => task.id === overId);
+
+    const sourceColumn = columns.find((column) => column.id === activeTask?.column_id);
+    const targetColumn = columns.find((column) => column.id === overTask?.column_id);
+
+    if (!sourceColumn || !targetColumn) return;
+
+    if (sourceColumn.id === targetColumn.id) {
+      const activeIndex = activeTask?.sort_order;
+      const targetIndex = overTask?.sort_order;
+
+      if (activeIndex === targetIndex || !activeIndex || !targetIndex) return;
+
+      setTasks((prevTasks: TaskType[]) => {
+        const newTasks = structuredClone(prevTasks);
+        const columnTasks = newTasks.filter((task) => task.column_id === sourceColumn.id);
+        const restTasks = newTasks.filter((task) => task.column_id !== sourceColumn.id);
+
+        moveBySortOrder(columnTasks, activeIndex!, targetIndex!);
+        return [...restTasks, ...columnTasks];
+      });
+    }
   }
 
   async function handleUpdateBoard(e: React.SubmitEvent) {
@@ -140,7 +169,7 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <DragDropProvider onDragStart={handleDragStart}>
+        <DragDropProvider onDragStart={handleDragStart} onDragOver={handleDragOver}>
           <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
             {columns.map((column) => (
               <Column
