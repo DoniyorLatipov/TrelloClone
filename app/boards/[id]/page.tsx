@@ -29,7 +29,7 @@ import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
-import { DragDropProvider } from '@dnd-kit/react';
+import { DragDropProvider, DragStartEvent } from '@dnd-kit/react';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -43,9 +43,17 @@ export default function BoardPage() {
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
 
-  interface dndElementType {
-    id: string;
-    type: 'column' | 'task';
+  // Dnd handlers
+  const [activeTask, setActiveTask] = useState<TaskType | null>(null);
+
+  function handleDragStart(event: DragStartEvent) {
+    const taskId = event.operation.source?.id as string;
+    const draggedTask = tasks.find((task) => task.id === taskId);
+
+    if (draggedTask) {
+      setActiveTask(draggedTask);
+    }
+    console.log(activeTask);
   }
 
   async function handleUpdateBoard(e: React.SubmitEvent) {
@@ -130,7 +138,7 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <DragDropProvider>
+        <DragDropProvider onDragStart={handleDragStart}>
           <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
             {columns.map((column) => (
               <Column

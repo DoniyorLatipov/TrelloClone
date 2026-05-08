@@ -20,10 +20,6 @@ export default function Column({ column, onCreatingTask, onEditColumn, tasks }: 
     type: 'column',
     accept: ['task', 'column'],
     collisionPriority: CollisionPriority.Low,
-    data: {
-      id: column.id,
-      type: 'column',
-    },
   });
 
   return (

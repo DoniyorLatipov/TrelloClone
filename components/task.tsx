@@ -16,10 +16,6 @@ export default function Task({ task, group }: TaskProps) {
     type: 'task',
     accept: 'task',
     group,
-    data: {
-      id: task.id,
-      type: 'task',
-    },
   });
 
   return (
