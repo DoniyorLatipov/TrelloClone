@@ -30,6 +30,7 @@ import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { DragDropProvider, DragOverEvent, DragOverlay, DragStartEvent } from '@dnd-kit/react';
+import { PointerSensor, PointerActivationConstraints, DragEndEvent } from '@dnd-kit/dom';
 import { TaskType } from '@/lib/supabase/types';
 import { TaskOverlay } from '@/components/task';
 
@@ -169,7 +170,19 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <DragDropProvider onDragStart={handleDragStart} onDragOver={handleDragOver}>
+        <DragDropProvider
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          sensors={(defaults) => [
+            ...defaults.filter((sensor) => sensor !== PointerSensor),
+            PointerSensor.configure({
+              activationConstraints: [
+                // Drag starts after the pointer moves 8px
+                new PointerActivationConstraints.Distance({ value: 8 }),
+              ],
+            }),
+          ]}
+        >
           <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
             {columns.map((column) => (
               <Column
