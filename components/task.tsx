@@ -7,12 +7,13 @@ import { useSortable } from '@dnd-kit/react/sortable';
 interface TaskProps {
   task: TaskType;
   group: string;
+  index: number;
 }
 
-export default function Task({ task, group }: TaskProps) {
+export default function Task({ task, index, group }: TaskProps) {
   const { ref, isDragging } = useSortable({
-    id: task.id,
-    index: task.sort_order,
+    id: String(task.id),
+    index,
     type: 'task',
     accept: 'task',
     group,
@@ -66,7 +67,7 @@ export default function Task({ task, group }: TaskProps) {
   );
 }
 
-export function TaskOverlay({ task }: Omit<TaskProps, 'group'>) {
+export function TaskOverlay({ task }: Omit<TaskProps, 'group' | 'index'>) {
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow">
       <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
