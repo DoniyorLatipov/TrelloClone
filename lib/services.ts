@@ -7,7 +7,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 // ----------
 
 export const boardService = {
-  async getBoard(supabase: SupabaseClient, boardId: string): Promise<BoardType> {
+  async getBoard(supabase: SupabaseClient, boardId: BoardType['id']): Promise<BoardType> {
     const { data, error } = await supabase.from('boards').select('*').eq('id', boardId).single();
 
     if (error) throw error;
@@ -39,7 +39,7 @@ export const boardService = {
   },
   async updateBoard(
     supabase: SupabaseClient,
-    boardId: string,
+    boardId: BoardType['id'],
     updates: {
       title: string;
       color: BaseColorType;
@@ -59,7 +59,7 @@ export const boardService = {
 };
 
 export const columnService = {
-  async getColumns(supabase: SupabaseClient, boardId: string): Promise<ColumnType[]> {
+  async getColumns(supabase: SupabaseClient, boardId: BoardType['id']): Promise<ColumnType[]> {
     const { data, error } = await supabase
       .from('columns')
       .select('*')
@@ -83,7 +83,7 @@ export const columnService = {
 };
 
 export const taskService = {
-  async getTasksByBoardId(supabase: SupabaseClient, boardId: string): Promise<TaskType[]> {
+  async getTasksByBoardId(supabase: SupabaseClient, boardId: BoardType['id']): Promise<TaskType[]> {
     // ----------
     // Get all tasks with their related column’s boardId, include only tasks that have a valid column (inner join), filter by the given boardId, and order the results by sort_order ascending.
     // ----------
@@ -166,7 +166,7 @@ export const boardDataService = {
   },
 
   // Precisely because the function will be accessing the table both of boards and their tasks, it is better to place this func in the boardData Service
-  async getBoardWithColumns(supabase: SupabaseClient, boardId: string) {
+  async getBoardWithColumns(supabase: SupabaseClient, boardId: BoardType['id']) {
     const [board, columns, tasks] = await Promise.all([
       boardService.getBoard(supabase, boardId),
       columnService.getColumns(supabase, boardId),

@@ -36,7 +36,9 @@ import { TaskOverlay } from '@/components/task';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, loading, error, updateBoard, createTask, columns, tasks, setTasks } = useBoard(id);
+  const { board, loading, error, updateBoard, createTask, columns, tasks, setTasks } = useBoard(
+    Number(id),
+  );
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -45,14 +47,14 @@ export default function BoardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [newTaskColumnId, setNewTaskColumnId] = useState<string | null>(null);
+  const [newTaskColumnId, setNewTaskColumnId] = useState<ColumnType['id'] | null>(null);
 
   // Dnd handlers
   const [activeTask, setActiveTask] = useState<TaskType | null>(null);
 
   function handleDragStart(event: DragStartEvent) {
     const taskId = event.operation.source?.id as string;
-    const draggedTask = tasks.find((task) => task.id === taskId);
+    const draggedTask = tasks.find((task) => task.id === Number(taskId));
 
     if (draggedTask) {
       setActiveTask(draggedTask);

@@ -6,7 +6,7 @@ import { BaseColorType } from '@/config/color';
 import { BasePrioritiesType } from '@/config/priorities';
 
 export interface BoardType {
-  id: string;
+  id: number;
   title: string;
   description: string | null;
   created_at: string;
@@ -16,8 +16,8 @@ export interface BoardType {
 }
 
 export interface ColumnType {
-  id: string;
-  board_id: string;
+  id: number;
+  board_id: number;
   title: string;
   sort_order: number;
   created_at: string;
@@ -25,8 +25,8 @@ export interface ColumnType {
 }
 
 export interface TaskType {
-  id: string;
-  column_id: string;
+  id: number;
+  column_id: number;
   title: string;
   description: string | null;
   assignee: string | null;

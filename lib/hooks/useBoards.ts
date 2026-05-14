@@ -63,7 +63,7 @@ export function useBoards() {
   };
 }
 
-export function useBoard(boardId: string) {
+export function useBoard(boardId: BoardType['id']) {
   const { supabase } = useSupabase();
   const [board, setBoard] = useState<BoardType | null>(null);
   const [columns, setColumns] = useState<ColumnType[]>([]);
@@ -95,7 +95,10 @@ export function useBoard(boardId: string) {
     }
   }
 
-  async function updateBoard(boardId: string, updates: { color: BaseColorType; title: string }) {
+  async function updateBoard(
+    boardId: BoardType['id'],
+    updates: { color: BaseColorType; title: string },
+  ) {
     if (!boardId) throw new Error(`Can't acces board with ID: ${boardId}.`);
 
     try {
@@ -114,7 +117,7 @@ export function useBoard(boardId: string) {
     }
   }
 
-  async function createTask(columnId: string, taskData: CreateTaskInputType) {
+  async function createTask(columnId: number, taskData: CreateTaskInputType) {
     if (!columnId) throw new Error(`Can't acces column with ID: ${columnId}.`);
 
     try {
