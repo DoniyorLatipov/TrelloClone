@@ -28,11 +28,12 @@ import { useBoard } from '@/lib/hooks/useBoards';
 import { capitalize, mapFormDataToCreateTaskInputType, moveBySortOrder } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropProvider, DragOverEvent, DragOverlay, DragStartEvent } from '@dnd-kit/react';
-import { PointerSensor, PointerActivationConstraints, DragEndEvent } from '@dnd-kit/dom';
-import { TaskType } from '@/lib/supabase/types';
+import { PointerSensor, PointerActivationConstraints } from '@dnd-kit/dom';
+import { ColumnType, TaskType } from '@/lib/supabase/types';
 import { TaskOverlay } from '@/components/task';
+import { move } from '@dnd-kit/helpers';
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +52,26 @@ export default function BoardPage() {
 
   // Dnd handlers
   const [activeTask, setActiveTask] = useState<TaskType | null>(null);
+  const [uiColumns, setUiColumns] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    if (!columns.length) return;
+
+    const nextState: Record<string, string[]> = {};
+
+    columns.forEach((column) => {
+      nextState[column.id] = tasks
+        .filter((task) => task.column_id === column.id)
+        .toSorted((a, b) => a.sort_order - b.sort_order)
+        .map((task) => String(task.id));
+    });
+
+    setUiColumns(nextState);
+  }, [columns, tasks]);
+
+  function handleDragOver(event: DragOverEvent) {
+    setUiColumns((items) => move(items, event));
+  }
 
   function handleDragStart(event: DragStartEvent) {
     const taskId = event.operation.source?.id as string;
@@ -58,36 +79,6 @@ export default function BoardPage() {
 
     if (draggedTask) {
       setActiveTask(draggedTask);
-    }
-  }
-
-  function handleDragOver(event: DragOverEvent) {
-    const overId = event.operation.target?.id as string;
-    const overType = event.operation.target?.type as string;
-
-    if (overType !== 'task') return;
-
-    const overTask = tasks.find((task) => task.id === overId);
-
-    const sourceColumn = columns.find((column) => column.id === activeTask?.column_id);
-    const targetColumn = columns.find((column) => column.id === overTask?.column_id);
-
-    if (!sourceColumn || !targetColumn) return;
-
-    if (sourceColumn.id === targetColumn.id) {
-      const activeIndex = activeTask?.sort_order;
-      const targetIndex = overTask?.sort_order;
-
-      if (activeIndex === targetIndex || !activeIndex || !targetIndex) return;
-
-      setTasks((prevTasks: TaskType[]) => {
-        const newTasks = structuredClone(prevTasks);
-        const columnTasks = newTasks.filter((task) => task.column_id === sourceColumn.id);
-        const restTasks = newTasks.filter((task) => task.column_id !== sourceColumn.id);
-
-        moveBySortOrder(columnTasks, activeIndex!, targetIndex!);
-        return [...restTasks, ...columnTasks];
-      });
     }
   }
 
@@ -193,18 +184,25 @@ export default function BoardPage() {
           ]}
         >
           <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
-            {columns.map((column) => (
-              <Column
-                key={column.id}
-                column={column}
-                onCreatingTask={() => {
-                  setNewTaskColumnId(column.id);
-                  setIsCreatingTask(true);
-                }}
-                onEditColumn={() => new Promise(() => {})}
-                tasks={tasks.filter((task) => task.column_id === column.id)}
-              />
-            ))}
+            {Object.entries(uiColumns).map(([columnId, taskIds]) => {
+              const currentColumn = columns.find((column) => column.id === Number(columnId))!;
+              const currentTasks = taskIds.map(
+                (taskId) => tasks.find((task) => String(task.id) === taskId)!,
+              );
+
+              return (
+                <Column
+                  key={currentColumn.id}
+                  column={currentColumn}
+                  tasks={currentTasks}
+                  onCreatingTask={() => {
+                    setNewTaskColumnId(currentColumn.id);
+                    setIsCreatingTask(true);
+                  }}
+                  onEditColumn={() => new Promise(() => {})}
+                />
+              );
+            })}
           </div>
           <DragOverlay>{activeTask ? <TaskOverlay task={activeTask} /> : null}</DragOverlay>
         </DragDropProvider>
