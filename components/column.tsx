@@ -47,8 +47,8 @@ export default function Column({ column, onCreatingTask, onEditColumn, tasks }: 
 
         {/* Column Content */}
         <div className="space-y-3 p-2">
-          {tasks.map((task) => (
-            <Task group={column.id} task={task} key={task.id} />
+          {tasks.map((task, index) => (
+            <Task index={index} group={String(column.id)} task={task} key={task.id} />
           ))}
           <Button
             variant="ghost"
