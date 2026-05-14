@@ -16,9 +16,9 @@ interface ColumnProps extends React.PropsWithChildren {
 
 export default function Column({ column, onCreatingTask, onEditColumn, tasks }: ColumnProps) {
   const { isDropTarget, ref } = useDroppable({
-    id: column.id,
+    id: String(column.id),
     type: 'column',
-    accept: ['task', 'column'],
+    accept: 'task',
     collisionPriority: CollisionPriority.Low,
   });
 
