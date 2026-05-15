@@ -58,6 +58,7 @@ export default function BoardPage() {
   // Dnd handlers
   const [activeTask, setActiveTask] = useState<TaskType | null>(null);
   const [uiColumns, setUiColumns] = useState<Record<string, string[]>>({});
+  const [columnOrder, setColumnOrder] = useState<ColumnType['id'][]>([]);
 
   useEffect(() => {
     if (!columns.length) return;
@@ -72,6 +73,9 @@ export default function BoardPage() {
     });
 
     setUiColumns(nextState);
+    setColumnOrder(
+      columns.toSorted((a, b) => a.sort_order - b.sort_order).map((column) => column.id),
+    );
   }, [columns, tasks]);
 
   function handleDragOver(event: DragOverEvent) {
@@ -197,9 +201,10 @@ export default function BoardPage() {
           ]}
         >
           <div className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto lg:pb-6 lg:px-2 lg:-mx-2 lg:[&::-webkit-scrollbar]:h-2 lg:[&::-webkit-scrollbar-track]:bg-gray-100 lg:[&::-webkit-thumb]:bg-gray-300 lg:[&::-webkit-scrollbar-thumb]:rounded-full space-y-4 lg:space-y-0">
-            {Object.entries(uiColumns).map(([columnId, taskIds]) => {
+            {columnOrder.map((columnId, columnIndex) => {
               const currentColumn = columns.find((column) => column.id === Number(columnId))!;
-              const currentTasks = taskIds.map(
+              const currentTaskIds = uiColumns[columnId];
+              const currentTasks = currentTaskIds.map(
                 (taskId) => tasks.find((task) => String(task.id) === taskId)!,
               );
 
@@ -207,6 +212,7 @@ export default function BoardPage() {
                 <Column
                   key={currentColumn.id}
                   column={currentColumn}
+                  index={columnIndex}
                   tasks={currentTasks}
                   onCreatingTask={() => {
                     setNewTaskColumnId(currentColumn.id);
