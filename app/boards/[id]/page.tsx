@@ -25,7 +25,7 @@ import { BASE_COLORS, BaseColorType } from '@/config/color';
 import { BASE_PRIORITIES } from '@/config/priorities';
 import { getColorClass } from '@/lib/getColorClass';
 import { useBoard } from '@/lib/hooks/useBoards';
-import { capitalize, mapFormDataToCreateTaskInputType, moveBySortOrder } from '@/lib/utils';
+import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
