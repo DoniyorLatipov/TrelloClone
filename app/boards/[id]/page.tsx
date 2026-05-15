@@ -70,6 +70,10 @@ export default function BoardPage() {
   }, [columns, tasks]);
 
   function handleDragOver(event: DragOverEvent) {
+    const { source } = event.operation;
+
+    if (source?.type === 'column') return;
+
     setUiColumns((items) => move(items, event));
   }
 
