@@ -74,12 +74,16 @@ export default function BoardPage() {
   }
 
   function handleDragStart(event: DragStartEvent) {
-    const taskId = event.operation.source?.id as string;
-    const draggedTask = tasks.find((task) => task.id === Number(taskId));
-
-    if (draggedTask) {
-      setActiveTask(draggedTask);
+    const { source } = event.operation;
+    if (source?.type === 'column') {
+      setActiveTask(null);
+      return;
     }
+
+    const taskId = source?.id as string;
+    const draggedTask = tasks.find((task) => task.id === Number(taskId)) ?? null;
+
+    setActiveTask(draggedTask);
   }
 
   async function handleUpdateBoard(e: React.SubmitEvent) {
