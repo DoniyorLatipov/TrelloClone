@@ -29,8 +29,13 @@ import { capitalize, mapFormDataToCreateTaskInputType } from '@/lib/utils';
 import { Loader2, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { DragDropProvider, DragOverEvent, DragOverlay, DragStartEvent } from '@dnd-kit/react';
-import { PointerSensor, PointerActivationConstraints } from '@dnd-kit/dom';
+import { DragDropProvider, DragOverlay } from '@dnd-kit/react';
+import {
+  PointerSensor,
+  PointerActivationConstraints,
+  DragStartEvent,
+  DragOverEvent,
+} from '@dnd-kit/dom';
 import { ColumnType, TaskType } from '@/lib/supabase/types';
 import { TaskOverlay } from '@/components/task';
 import { move } from '@dnd-kit/helpers';
