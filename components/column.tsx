@@ -5,20 +5,28 @@ import { Button } from './ui/button';
 import { Edit, Plus } from 'lucide-react';
 import Task from './task';
 import { CollisionPriority } from '@dnd-kit/abstract';
-import { useDroppable } from '@dnd-kit/react';
+import { useSortable } from '@dnd-kit/react/sortable';
 
 interface ColumnProps extends React.PropsWithChildren {
   column: ColumnType;
   onCreatingTask: () => void;
   onEditColumn: (columnData: any) => Promise<void>;
   tasks: TaskType[];
+  index: number;
 }
 
-export default function Column({ column, onCreatingTask, onEditColumn, tasks }: ColumnProps) {
-  const { isDropTarget, ref } = useDroppable({
+export default function Column({
+  column,
+  onCreatingTask,
+  onEditColumn,
+  tasks,
+  index,
+}: ColumnProps) {
+  const { isDropTarget, ref } = useSortable({
     id: String(column.id),
+    index,
     type: 'column',
-    accept: 'task',
+    accept: ['task', 'column'],
     collisionPriority: CollisionPriority.Low,
   });
 
