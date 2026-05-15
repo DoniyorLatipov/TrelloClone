@@ -106,7 +106,7 @@ export const taskService = {
 
   async createTask(
     supabase: SupabaseClient,
-    task: Omit<TaskType, 'id' | 'created_at' | 'updated_at'>,
+    task: Omit<TaskType, 'id' | 'created_at'>,
   ): Promise<TaskType> {
     const { data, error } = await supabase.from('tasks').insert(task).select().single();
 
